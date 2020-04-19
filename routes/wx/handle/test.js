@@ -9,5 +9,5 @@ router.get('/',async ctx => {
     console.log(`query ${ctx.query.url}`)
     ctx.body = sign(ticket.token,ctx.query.url)
 })
-
+ 
 module.exports = router.routes()
