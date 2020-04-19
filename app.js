@@ -41,7 +41,8 @@ app.use(
     path: [
       /^\/api\/agents\/login/,
       /^\/api\/agents\/agentlist/,
-      /^\/api\/agents\/register/
+      /^\/api\/agents\/register/,
+      /^((?!\/api).)*$/,
     ]
   })
 )

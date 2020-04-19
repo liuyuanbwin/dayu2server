@@ -24,6 +24,38 @@ const marketbill = (date)=>{
   }
   return remind
 }
+//验证验车是否过期
+const checkExpire = (date,billDate) => {
+console.log('sskfjaksfjkasj')
+  const dt = new Date(date)
+
+  const y = dt.getFullYear() + 1
+  const m = (dt.getMonth() + 1 + '').padStart(2, '0')
+  const d = (dt.getDate() + '').padStart(2, '0')
+
+  const hh = (dt.getHours() + '').padStart(2, '0')
+  const mm = (dt.getMinutes() + '').padStart(2, '0')
+  const ss = (dt.getSeconds() + '').padStart(2, '0')
+
+  const expiredDateString = `${y}-${m}-${d} ${hh}:${mm}:${ss}`
+
+  const expiredDate = new Date(expiredDateString)
+
+  const overtime = (billDate - date)  / (1000 * 60 * 60 * 24) 
+  var remind = ''
+  if (overtime >= 0) {
+     remind = 'expired'
+  }else{
+    if (overtime > -30) {
+       remind = 'tip'
+    }
+    if(overtime > -7){
+       remind = 'warning'
+    }
+  }
+  return remind
+
+}
 //降序排列
 const descendExpireDate = (a, b) => {
   return a.sortDate < b.sortDate ? 1 : -1
@@ -79,7 +111,6 @@ router.post('/',async ctx => {
 //
   if (clis.length) {
     var lastcli = clis[0]
-    console.log(`lastcli ${JSON.stringify(lastcli)}`);
     lastcli.remind = marketbill(lastcli.expireDate)
     events.splice(findBillById(events,lastcli._id),1,lastcli)
   }
@@ -90,35 +121,15 @@ router.post('/',async ctx => {
     events.splice(findBillById(events,lastgap._id),1,lastgap)
   }
 
-  if (checkcars.length) {
-    var lastcheckcar = checkcars[0]
-    lastcheckcar.remind = marketbill(lastcheckcar.expireDate)
+ if (checkcars.length) {
+    var lastcheckcar = checkcars[0] 
+    lastcheckcar.remind =  checkExpire(car.checkDate,lastcheckcar.expireDate)
     events.splice(findBillById(events,lastcheckcar._id),1,lastcheckcar)
+  }else{
+    car.checkneed = true
   }
 
-
-  
-
-  // if(bills.length){
-  //   const lastbill = bills[0]
-
-  //   //过期时间  >0 过期  <0 未到期  >-30 近一个月 >-7 近一周
-  //   //        expired               tip      warning
-    // const overtime = (new Date() - lastbill.expireDate)  / (1000 * 60 * 60 * 24) 
-    
-    // if (overtime > 0) {
-    //   lastbill.remind = 'expired'
-    // }else{
-    //   if (overtime > -30) {
-    //     lastbill.remind 
-    //   }
-    // }
-  // }
-
-  
-
   car.events = events
-  console.log(`bills ==> ${JSON.stringify(events)}`);
  ctx.body = resbody(0,car)
 })
 

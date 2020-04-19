@@ -24,6 +24,9 @@ module.exports = error => {
       case 40007:
       return '请求参数错误'
       break
+    case 60001:
+      return '微信授权出错,请重试'
+      break
     default:
       return '未知错误'
       break
